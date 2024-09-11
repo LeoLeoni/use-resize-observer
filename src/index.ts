@@ -102,10 +102,14 @@ function useResizeObserver<T extends Element>(
           resizeObserverRef.current.box !== opts.box ||
           resizeObserverRef.current.round !== round
         ) {
+          // It's possible that the global window is different than the window that the element is rendered in.
+          // Therefore we need to get the element's window's ResizeObserver constructor
+          const currentDocument = element.ownerDocument;
+          const currentWindow = currentDocument?.defaultView ?? window;
           resizeObserverRef.current = {
             box: opts.box,
             round,
-            instance: new ResizeObserver((entries) => {
+            instance: new currentWindow.ResizeObserver((entries) => {
               const entry = entries[0];
 
               const boxProp =
